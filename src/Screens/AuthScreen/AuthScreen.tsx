@@ -1,8 +1,20 @@
 // src/Screens/AuthScreen.jsx
 
-import { Outlet } from "react-router-dom";
+import { useEffect } from "react";
+import { Outlet, useNavigate } from "react-router-dom";
+import supabase from "../../utils/supabaseConfig";
 
 const AuthScreen = () => {
+  const navigate = useNavigate();
+  const getUser = async () => {
+    const response = await supabase.auth.getUser();
+    if (response.data.user) {
+      navigate("/dashboard");
+    }
+  };
+  useEffect(() => {
+    getUser();
+  }, []);
   return (
     <div>
       {/* You can include common layout or styling for auth screens here */}

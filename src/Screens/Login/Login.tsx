@@ -10,6 +10,7 @@ import { useEffect, useState } from "react";
 import { useDebounce } from "../../utils";
 import supabase from "../../utils/supabaseConfig";
 import { SignUpDetailsType } from "../SignUp/SignUp";
+import { toast } from "react-toastify";
 
 type LoginDetailsType = Omit<SignUpDetailsType, "role">;
 
@@ -18,7 +19,6 @@ const Login = () => {
     email: "",
     password: "",
   });
-  const roles = ["Admin", "Management"] as const;
   const onChange = <K extends keyof LoginDetailsType>(
     key: K,
     value: LoginDetailsType[K]
@@ -40,14 +40,33 @@ const Login = () => {
     initialData();
   }, []);
   const handleSignIn = async () => {
-    try {
-      const response = await supabase.auth.signInWithPassword({
-        email: loginDetails.email,
-        password: loginDetails.password,
+    const id = toast.loading("Loggin In", {
+      closeButton: true,
+      draggable: true,
+      hideProgressBar: false,
+      progress: 1,
+    });
+    const response = await supabase.auth.signInWithPassword({
+      email: loginDetails.email,
+      password: loginDetails.password,
+    });
+    console.log({ response });
+    if (response.data.user) {
+      toast.update(id, {
+        type: "success",
+        render: "Logged in Successfully",
+        isLoading: false,
+        progress: 0,
+        autoClose: 3000,
       });
-      console.log({ response });
-    } catch (error) {
-      console.log(error);
+    } else {
+      toast.update(id, {
+        type: "error",
+        render: response.error?.message,
+        isLoading: false,
+        progress: 0,
+        autoClose: 3000,
+      });
     }
   };
   return (

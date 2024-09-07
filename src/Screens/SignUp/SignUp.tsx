@@ -1,7 +1,9 @@
 import { Button, Card, Text, TextInput, Radio, Group } from "@mantine/core";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { useDebounce } from "../../utils";
 import supabase from "../../utils/supabaseConfig";
+import { toast } from "react-toastify";
+import { useNavigate, useNavigation } from "react-router-dom";
 export type SignUpDetailsType = {
   email: string;
   password: string;
@@ -9,7 +11,8 @@ export type SignUpDetailsType = {
 };
 
 const SignUp = () => {
-  const [loginDetails, setLoginDetails] = useState<SignUpDetailsType>({
+  const navigate = useNavigate();
+  const [signInDetails, setSignInDetails] = useState<SignUpDetailsType>({
     email: "",
     password: "",
     role: "Management",
@@ -19,7 +22,7 @@ const SignUp = () => {
     key: K,
     value: SignUpDetailsType[K]
   ) => {
-    setLoginDetails((prev) => {
+    setSignInDetails((prev) => {
       return {
         ...prev,
         [key]: value,
@@ -30,10 +33,40 @@ const SignUp = () => {
     func: onChange,
   });
   const handleSignUp = async () => {
-    const response = await supabase.auth.signInWithPassword({
-      email: loginDetails.email,
-      password: loginDetails.password,
+    const id = toast.loading("Sign Up", {
+      closeButton: true,
+      draggable: true,
+      hideProgressBar: false,
+      progress: 1,
     });
+    const response = await supabase.auth.signUp({
+      email: signInDetails.email,
+      password: signInDetails.password,
+      options: {
+        data: {
+          role: signInDetails.role,
+        },
+      },
+    });
+    if (response.data.user) {
+      navigate("/");
+      toast.update(id, {
+        type: "success",
+        render: "Account created Successfully,Check your Email and Verify",
+        isLoading: false,
+        progress: 0,
+        autoClose: 3000,
+      });
+    } else {
+      toast.update(id, {
+        type: "error",
+        render: response.error?.message,
+        isLoading: false,
+        progress: 0,
+        autoClose: 3000,
+      });
+    }
+
     console.log({ response });
   };
   return (

@@ -1,5 +1,5 @@
 import { createBrowserRouter } from "react-router-dom";
-import { Dashboard, Login, SignUp, AuthScreen } from "../Screens";
+import { Login, SignUp, AuthScreen, UserRouter, Dashboard } from "../Screens";
 
 const router = createBrowserRouter([
   {
@@ -19,10 +19,13 @@ const router = createBrowserRouter([
   },
   {
     path: "/dashboard",
-    element: <Dashboard />,
+    element: <UserRouter />,
     // errorElement: <ErrorPage />, // Handle errors for dashboard routes
     children: [
-      // You can add nested routes here
+      {
+        index: true,
+        element: <Dashboard />,
+      },
     ],
   },
 ]);
