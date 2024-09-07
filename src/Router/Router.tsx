@@ -1,5 +1,12 @@
 import { createBrowserRouter } from "react-router-dom";
-import { Login, SignUp, AuthScreen, UserRouter, Dashboard } from "../Screens";
+import {
+  Login,
+  SignUp,
+  AuthScreen,
+  UserRouter,
+  Dashboard,
+  Settings,
+} from "../Screens";
 
 const router = createBrowserRouter([
   {
@@ -18,7 +25,7 @@ const router = createBrowserRouter([
     ],
   },
   {
-    path: "/dashboard",
+    path: "/user",
     element: <UserRouter />,
     // errorElement: <ErrorPage />, // Handle errors for dashboard routes
     children: [
@@ -26,6 +33,10 @@ const router = createBrowserRouter([
         index: true,
         element: <Dashboard />,
       },
+      // {
+      //   path: "/settings",
+      //   element: <Settings />,
+      // },
     ],
   },
 ]);

@@ -9,7 +9,7 @@ const AuthScreen = () => {
   const getUser = async () => {
     const response = await supabase.auth.getUser();
     if (response.data.user) {
-      navigate("/dashboard");
+      navigate("/user");
     }
   };
   useEffect(() => {

@@ -66,8 +66,6 @@ const SignUp = () => {
         autoClose: 3000,
       });
     }
-
-    console.log({ response });
   };
   return (
     <div className="w-screen h-screen flex items-center justify-center bg-[#EEF2F5]">

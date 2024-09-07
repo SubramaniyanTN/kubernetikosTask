@@ -11,10 +11,12 @@ import { useDebounce } from "../../utils";
 import supabase from "../../utils/supabaseConfig";
 import { SignUpDetailsType } from "../SignUp/SignUp";
 import { toast } from "react-toastify";
+import { useNavigate } from "react-router-dom";
 
 type LoginDetailsType = Omit<SignUpDetailsType, "role">;
 
 const Login = () => {
+  const navigate = useNavigate();
   const [loginDetails, setLoginDetails] = useState<LoginDetailsType>({
     email: "",
     password: "",
@@ -33,12 +35,6 @@ const Login = () => {
   const debouncedOnChange = useDebounce({
     func: onChange,
   });
-  const initialData = async () => {
-    console.log("Get user", await supabase.auth.getUser());
-  };
-  useEffect(() => {
-    initialData();
-  }, []);
   const handleSignIn = async () => {
     const id = toast.loading("Loggin In", {
       closeButton: true,
@@ -50,7 +46,6 @@ const Login = () => {
       email: loginDetails.email,
       password: loginDetails.password,
     });
-    console.log({ response });
     if (response.data.user) {
       toast.update(id, {
         type: "success",
@@ -59,6 +54,7 @@ const Login = () => {
         progress: 0,
         autoClose: 3000,
       });
+      navigate("/user");
     } else {
       toast.update(id, {
         type: "error",
