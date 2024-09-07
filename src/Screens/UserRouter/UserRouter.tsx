@@ -33,8 +33,8 @@ function NavbarLink({ icon: Icon, label, active, onClick }: NavbarLinkProps) {
 }
 
 const linkData = [
-  { icon: IconGauge, label: "Dashboard", path: "/dashboard" },
-  { icon: IconSettings, label: "Settings", path: "/settings" },
+  { icon: IconGauge, label: "Dashboard", path: "/user/" },
+  { icon: IconSettings, label: "Settings", path: "/user/settings" },
 ];
 
 const UserRouter = () => {
@@ -79,7 +79,7 @@ const UserRouter = () => {
         </div>
 
         <div className={classes.navbarMain}>
-          <Stack justify="center" gap={0}>
+          <Stack justify="center" align="center" gap={10}>
             {links}
           </Stack>
         </div>
