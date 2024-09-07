@@ -1,17 +1,22 @@
-import { Button, Card, Text, TextInput, Radio, Group } from "@mantine/core";
-import { useState } from "react";
+import {
+  Button,
+  Card,
+  Text,
+  TextInput,
+  Anchor,
+  Container,
+} from "@mantine/core";
+import { useEffect, useState } from "react";
 import { useDebounce } from "../../utils";
-type LoginDetailsType = {
-  email: string;
-  password: string;
-  role: "Admin" | "Management";
-};
+import supabase from "../../utils/supabaseConfig";
+import { SignUpDetailsType } from "../SignUp/SignUp";
+
+type LoginDetailsType = Omit<SignUpDetailsType, "role">;
 
 const Login = () => {
   const [loginDetails, setLoginDetails] = useState<LoginDetailsType>({
     email: "",
     password: "",
-    role: "Management",
   });
   const roles = ["Admin", "Management"] as const;
   const onChange = <K extends keyof LoginDetailsType>(
@@ -28,8 +33,22 @@ const Login = () => {
   const debouncedOnChange = useDebounce({
     func: onChange,
   });
-  const handleSignIn = () => {
-    // supabase.au
+  const initialData = async () => {
+    console.log("Get user", await supabase.auth.getUser());
+  };
+  useEffect(() => {
+    initialData();
+  }, []);
+  const handleSignIn = async () => {
+    try {
+      const response = await supabase.auth.signInWithPassword({
+        email: loginDetails.email,
+        password: loginDetails.password,
+      });
+      console.log({ response });
+    } catch (error) {
+      console.log(error);
+    }
   };
   return (
     <div className="w-screen h-screen flex items-center justify-center bg-[#EEF2F5]">
@@ -53,31 +72,20 @@ const Login = () => {
           size="md"
           placeholder="Password"
         />
-        <Radio.Group
-          name="role"
-          label="Select your Role"
-          description="Based on this role , You will be able to manage Projects"
-          withAsterisk
-        >
-          <Group mt="xs">
-            {roles.map((singleValue, index) => (
-              <Radio
-                key={index}
-                onChange={(event: React.ChangeEvent<HTMLInputElement>) =>
-                  debouncedOnChange(
-                    "role",
-                    event.target.value as LoginDetailsType["role"]
-                  )
-                }
-                value={singleValue}
-                label={singleValue}
-              />
-            ))}
-          </Group>
-        </Radio.Group>
         <Button onClick={handleSignIn} size="md" variant="filled">
           Login
         </Button>
+        <Container className="flex flex-row justify-center items-center gap-4">
+          <Text
+            className="font-[#292929] font-normal text-sm"
+            variant="heading"
+          >
+            Don't have an account ?
+          </Text>
+          <Anchor href="/signup" variant="text" underline="always">
+            Sign up
+          </Anchor>
+        </Container>
       </Card>
     </div>
   );
