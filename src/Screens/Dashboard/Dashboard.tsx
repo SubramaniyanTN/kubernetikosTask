@@ -24,10 +24,11 @@ import {
   DataTableSortStatus,
 } from "mantine-datatable";
 import { useContextMenu } from "mantine-contextmenu";
-import { useCallback, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import classes from "./ComplexUsageExample.module.css";
 import { useGetContacts } from "../../Query/Contacts/contacts";
-import { ContactsType } from "../../utils/SUPABASE_TABLE";
+import SUPABASE_TABLE, { ContactsType } from "../../utils/SUPABASE_TABLE";
+import { supabase } from "../../utils";
 
 let PAGE_SIZE = 10;
 
@@ -54,6 +55,14 @@ const Dashboard = () => {
     setPage(1);
     setSortStatus(status);
   };
+
+  const initialData = async () => {
+    const response = await supabase.from(SUPABASE_TABLE.contacts).select("*");
+    console.log({ response });
+  };
+  useEffect(() => {
+    initialData();
+  }, []);
 
   const editRecord = useCallback(({ name }: ContactsType) => {
     console.log({

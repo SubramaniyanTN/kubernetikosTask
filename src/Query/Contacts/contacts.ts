@@ -13,7 +13,7 @@ export const useGetContacts = (search: string, limit: number) => {
     queryKey: [QUERY_KEY.contacts],
     queryFn: async ({ pageParam = 0 }) => {
       return GET({
-        url: `/rest/v1/contacts`,
+        url: `/contacts`,
         config: {
           params: {
             select: "*",
