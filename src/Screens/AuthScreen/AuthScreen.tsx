@@ -8,6 +8,10 @@ const AuthScreen = () => {
   const navigate = useNavigate();
   const getUser = async () => {
     const response = await supabase.auth.getUser();
+    console.log("getSession", await supabase.auth.getSession());
+    console.log("getUserIdentities", await supabase.auth.getUserIdentities());
+    console.log("getUser", await supabase.auth.getUser());
+
     if (response.data.user) {
       navigate("/user");
     }
