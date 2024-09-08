@@ -10,6 +10,9 @@ const GET = <TResponse = any>({
   url,
   config,
 }: GetPropsType): Promise<TResponse> =>
-  api.get(url, config).then((res) => res.data);
+  api.get(url, config).then((res) => {
+    console.log(res);
+    return res.data;
+  });
 
 export default GET;

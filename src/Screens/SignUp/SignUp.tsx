@@ -4,10 +4,12 @@ import { useDebounce } from "../../utils";
 import supabase from "../../utils/supabaseConfig";
 import { toast } from "react-toastify";
 import { useNavigate, useNavigation } from "react-router-dom";
+import useCreateUser from "../../Query/User/createUser";
 export type SignUpDetailsType = {
   email: string;
   password: string;
   role: "Admin" | "Management";
+  userName: string;
 };
 
 const SignUp = () => {
@@ -16,6 +18,7 @@ const SignUp = () => {
     email: "",
     password: "",
     role: "Management",
+    userName: "",
   });
   const roles = ["Admin", "Management"] as const;
   const onChange = <K extends keyof SignUpDetailsType>(
@@ -29,6 +32,7 @@ const SignUp = () => {
       };
     });
   };
+  const createUser = useCreateUser();
   const debouncedOnChange = useDebounce({
     func: onChange,
   });
@@ -45,9 +49,11 @@ const SignUp = () => {
       options: {
         data: {
           role: signInDetails.role,
+          user_name: signInDetails.userName,
         },
       },
     });
+    console.log({ response });
     if (response.data.user) {
       navigate("/");
       toast.update(id, {
@@ -88,6 +94,14 @@ const SignUp = () => {
           label="Enter your Password"
           size="md"
           placeholder="Password"
+        />
+        <TextInput
+          onChange={(event: React.ChangeEvent<HTMLInputElement>) =>
+            debouncedOnChange("userName", event.target.value)
+          }
+          label="Enter your User Name"
+          size="md"
+          placeholder="User Name"
         />
         <Radio.Group
           name="role"

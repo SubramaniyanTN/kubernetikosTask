@@ -4,7 +4,6 @@ import {
   Center,
   Flex,
   Group,
-  Image,
   MantineTheme,
   Text,
   TextInput,
@@ -18,68 +17,58 @@ import {
   IconTrash,
   IconTrashX,
 } from "@tabler/icons-react";
-import { useQuery } from "@tanstack/react-query";
 import {
   DataTable,
   DataTableColumn,
   DataTableProps,
   DataTableSortStatus,
 } from "mantine-datatable";
-import dayjs from "dayjs";
 import { useContextMenu } from "mantine-contextmenu";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useState } from "react";
 import classes from "./ComplexUsageExample.module.css";
-import supabase from "../../utils/supabaseConfig";
-import { SUPABASE_TABLE } from "../../utils";
 import { useGetContacts } from "../../Query/Contacts/contacts";
+import { ContactsType } from "../../utils/SUPABASE_TABLE";
 
-type Employee = any;
 let PAGE_SIZE = 10;
 
 const Dashboard = () => {
+  const [limit, setLimit] = useState(10);
   const { showContextMenu, hideContextMenu } = useContextMenu();
   const [page, setPage] = useState(1);
-  const [sortStatus, setSortStatus] = useState<DataTableSortStatus<Employee>>({
+  const [sortStatus, setSortStatus] = useState<
+    DataTableSortStatus<ContactsType>
+  >({
     columnAccessor: "name",
     direction: "asc",
   });
 
-  const initialData = async () => {
-    const { data, error } = await supabase
-      .from(SUPABASE_TABLE.contacts)
-      .select("*");
-    console.log({ data, error });
-  };
-
-  useEffect(() => {
-    initialData();
-  }, []);
-
-  const contacts = useGetContacts();
+  const contacts = useGetContacts("", limit);
+  console.log(contacts.error);
   const tableData = contacts.data?.pages.map((singlePage) => singlePage).flat();
-  console.log({ data: contacts.data });
 
-  const [selectedRecords, setSelectedRecords] = useState<Employee[]>([]);
+  const [selectedRecords, setSelectedRecords] = useState<ContactsType[]>([]);
 
-  const handleSortStatusChange = (status: DataTableSortStatus<Employee>) => {
+  const handleSortStatusChange = (
+    status: DataTableSortStatus<ContactsType>
+  ) => {
     setPage(1);
     setSortStatus(status);
   };
 
-  const editRecord = useCallback(({ firstName, lastName }: Employee) => {
+  const editRecord = useCallback(({ name }: ContactsType) => {
     console.log({
       withBorder: true,
       title: "Editing record",
-      message: `In a real application we could show a popup to edit ${firstName} ${lastName}, but this is just a demo, so we're not going to do that`,
+      message: `In a real application we could show a popup to edit ${name}, but this is just a demo, so we're not going to do that`,
     });
   }, []);
 
-  const deleteRecord = useCallback(({ firstName, lastName }: Employee) => {
+  const deleteRecord = useCallback(({ name }: ContactsType) => {
     console.log({
       withBorder: true,
       color: "red",
       title: "Deleting record",
-      message: `Should delete ${firstName} ${lastName}, but we're not going to, because this is just a demo`,
+      message: `Should delete ${name}, but we're not going to, because this is just a demo`,
     });
   }, []);
 
@@ -92,16 +81,16 @@ const Dashboard = () => {
     });
   }, [selectedRecords.length]);
 
-  const sendMessage = useCallback(({ firstName, lastName }: Employee) => {
+  const sendMessage = useCallback(({ name }: ContactsType) => {
     console.log({
       withBorder: true,
       title: "Sending message",
-      message: `A real application could send a message to ${firstName} ${lastName}, but this is just a demo and we're not going to do that because we don't have a backend`,
+      message: `A real application could send a message to ${name}, but this is just a demo and we're not going to do that because we don't have a backend`,
       color: "green",
     });
   }, []);
 
-  const renderActions: DataTableColumn<Employee>["render"] = (record) => (
+  const renderActions: DataTableColumn<ContactsType>["render"] = (record) => (
     <Group gap={4} justify="right" wrap="nowrap">
       <ActionIcon
         size="sm"
@@ -110,7 +99,7 @@ const Dashboard = () => {
         onClick={(e) => {
           e.stopPropagation(); // 👈 prevent triggering the row click function
           openModal({
-            title: `Send message to ${record.firstName} ${record.lastName}`,
+            title: `Send message to ${record.name}`,
             classNames: {
               header: classes.modalHeader,
               title: classes.modalTitle,
@@ -156,32 +145,31 @@ const Dashboard = () => {
     </Group>
   );
 
-  const rowExpansion: DataTableProps<Employee>["rowExpansion"] = {
+  const rowExpansion: DataTableProps<ContactsType>["rowExpansion"] = {
     allowMultiple: true,
     content: ({
-      record: { id, sex, firstName, lastName, birthDate, department },
+      record: {
+        id,
+        age,
+        city,
+        company,
+        department,
+        description,
+        email,
+        name,
+        state,
+        created_at,
+      },
     }) => (
       <Flex p="xs" pl={rem(50)} gap="md" align="center">
-        <Image
-          radius="sm"
-          w={50}
-          h={50}
-          alt={`${firstName} ${lastName}`}
-          src={`https://xsgames.co/randomusers/avatar.php?g=${sex}&q=${id}`}
-        />
         <Text size="sm" fs="italic">
-          {firstName} {lastName}, born on{" "}
-          {dayjs(birthDate).format("MMM D YYYY")}, works in {department.name}{" "}
-          department at {department.company.name}.
-          <br />
-          His office address is {department.company.streetAddress},{" "}
-          {department.company.city}, {department.company.state}.
+          {description}
         </Text>
       </Flex>
     ),
   };
 
-  const handleContextMenu: DataTableProps<Employee>["onRowContextMenu"] = ({
+  const handleContextMenu: DataTableProps<ContactsType>["onRowContextMenu"] = ({
     record,
     event,
   }) =>
@@ -189,12 +177,12 @@ const Dashboard = () => {
       {
         key: "edit",
         icon: <IconEdit size={14} />,
-        title: `Edit ${record.firstName} ${record.lastName}`,
+        title: `Edit ${record.name} `,
         onClick: () => editRecord(record),
       },
       {
         key: "delete",
-        title: `Delete ${record.firstName} ${record.lastName}`,
+        title: `Delete ${record.name} `,
         icon: <IconTrashX size={14} />,
         color: "red",
         onClick: () => deleteRecord(record),
@@ -212,11 +200,10 @@ const Dashboard = () => {
       },
     ])(event);
 
-  const now = dayjs();
   const aboveXs = (theme: MantineTheme) =>
     `(min-width: ${theme.breakpoints.xs})`;
 
-  const columns: DataTableProps<Employee>["columns"] = [
+  const columns: DataTableProps<ContactsType>["columns"] = [
     {
       accessor: "name",
       noWrap: true,

@@ -13,7 +13,7 @@ import { SignUpDetailsType } from "../SignUp/SignUp";
 import { toast } from "react-toastify";
 import { useNavigate } from "react-router-dom";
 
-type LoginDetailsType = Omit<SignUpDetailsType, "role">;
+type LoginDetailsType = Omit<Omit<SignUpDetailsType, "role">, "userName">;
 
 const Login = () => {
   const navigate = useNavigate();
