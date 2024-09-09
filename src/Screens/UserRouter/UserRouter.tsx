@@ -36,12 +36,12 @@ const linkData = [
   {
     icon: IconGauge,
     label: "Dashboard",
-    path: import.meta.env.BASE_URL + "/user/",
+    path: import.meta.env.BASE_URL + "user/",
   },
   {
     icon: IconSettings,
     label: "Settings",
-    path: import.meta.env.BASE_URL + "/user/settings",
+    path: import.meta.env.BASE_URL + "user/settings",
   },
 ];
 
