@@ -373,38 +373,42 @@ const Dashboard = () => {
   ];
 
   return (
-    <div className={classes.tableContainer}>
+    <div className="w-full h-full p-4">
       <div className="w-full flex justify-end items-end my-2">
         <Button onClick={open}>Create Contact</Button>
       </div>
-      <DataTable
-        height="calc(100vh - 80px)" // Adjust this height based on the remaining space after other elements
-        minHeight={400}
-        maxHeight={1000}
-        withTableBorder
-        highlightOnHover
-        borderRadius="sm"
-        withColumnBorders
-        striped
-        verticalAlign="top"
-        pinLastColumn
-        columns={columns}
-        fetching={contacts.isFetching}
-        records={tableData || []}
-        page={page}
-        onPageChange={setPage}
-        totalRecords={tableData?.length || 0}
-        recordsPerPage={PAGE_SIZE}
-        sortStatus={sortStatus}
-        onSortStatusChange={handleSortStatusChange}
-        selectedRecords={selectedRecords}
-        onSelectedRecordsChange={setSelectedRecords}
-        rowExpansion={rowExpansion}
-        onRowContextMenu={handleContextMenu}
-        onScroll={hideContextMenu}
-      />
-      <Modal opened={opened} onClose={close} title="Authentication">
-        {/* Modal content */}
+      <div className="overflow-auto h-[calc(100vh-100px)]">
+        <DataTable
+          minHeight={400}
+          maxHeight={1000}
+          withTableBorder
+          highlightOnHover
+          borderRadius="sm"
+          withColumnBorders
+          striped
+          verticalAlign="top"
+          pinLastColumn
+          columns={columns}
+          fetching={contacts.isFetching}
+          records={tableData || []}
+          page={page}
+          onPageChange={setPage}
+          totalRecords={tableData?.length || 0}
+          recordsPerPage={PAGE_SIZE}
+          sortStatus={sortStatus}
+          onSortStatusChange={handleSortStatusChange}
+          selectedRecords={selectedRecords}
+          onSelectedRecordsChange={setSelectedRecords}
+          rowExpansion={rowExpansion}
+          onRowContextMenu={handleContextMenu}
+          onScroll={hideContextMenu}
+        />
+      </div>
+      <Modal
+        opened={opened}
+        onClose={close}
+        title={isEdit ? "Edit Contact" : "Create Contact"}
+      >
         <TextInput
           label="Enter name"
           placeholder="Name"
@@ -440,7 +444,7 @@ const Dashboard = () => {
         />
         <TextInput
           label="Enter Department"
-          placeholder="department"
+          placeholder="Department"
           defaultValue={contactData.department}
           onChange={(event) =>
             debouncedOnChange("department", event.currentTarget.value)
@@ -475,7 +479,7 @@ const Dashboard = () => {
             variant="filled"
             onClick={isEdit ? updatingData : creatingData}
           >
-            {isEdit ? "Update User" : "Create User"}
+            {isEdit ? "Update Contact" : "Create Contact"}
           </Button>
         </div>
       </Modal>
