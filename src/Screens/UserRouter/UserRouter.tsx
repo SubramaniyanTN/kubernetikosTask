@@ -70,7 +70,7 @@ const UserRouter = () => {
       progress: 0,
       autoClose: 3000,
     });
-    navigate("/");
+    navigate(import.meta.env.BASE_URL);
   };
 
   const links = linkData.map((link, index) => (
