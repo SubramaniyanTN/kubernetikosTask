@@ -10,7 +10,7 @@ import {
 
 const router = createBrowserRouter([
   {
-    path: "/",
+    path: import.meta.env.BASE_URL,
     element: <AuthScreen />,
     // errorElement: <ErrorPage />, // Handle errors for auth routes
     children: [
@@ -25,7 +25,7 @@ const router = createBrowserRouter([
     ],
   },
   {
-    path: "/user",
+    path: import.meta.env.BASE_URL + "user",
     element: <UserRouter />,
     // errorElement: <ErrorPage />, // Handle errors for dashboard routes
     children: [
