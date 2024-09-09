@@ -375,7 +375,7 @@ const Dashboard = () => {
 
   return (
     <div className={classes.tableContainer}>
-      <div className="w-full flex justify-end items-end">
+      <div className="w-full flex justify-end items-end my-2">
         <Button onClick={open}>Create Contact</Button>
       </div>
       <DataTable

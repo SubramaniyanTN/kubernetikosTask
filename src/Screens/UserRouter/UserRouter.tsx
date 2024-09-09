@@ -1,5 +1,5 @@
-import { Outlet, useNavigate } from "react-router-dom";
-import { useState } from "react";
+import { Outlet, useLocation, useNavigate } from "react-router-dom";
+import { useEffect, useState } from "react";
 import { Center, Tooltip, UnstyledButton, Stack } from "@mantine/core";
 import {
   IconHome2,
@@ -40,6 +40,14 @@ const linkData = [
 const UserRouter = () => {
   const [active, setActive] = useState(0);
   const navigate = useNavigate();
+  const location = useLocation();
+  // Update active index based on location.pathname
+  useEffect(() => {
+    const activeIndex = linkData.findIndex(
+      (link) => link.path === location.pathname
+    );
+    setActive(activeIndex >= 0 ? activeIndex : 0);
+  }, [location.pathname]);
 
   const handleNavigation = (path: string) => {
     navigate(path);
