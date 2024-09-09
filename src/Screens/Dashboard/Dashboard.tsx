@@ -14,9 +14,7 @@ import { closeAllModals, openModal } from "@mantine/modals";
 import {
   IconClick,
   IconEdit,
-  IconMessage,
   IconTrashX,
-  IconHttpDelete,
   IconTrash,
 } from "@tabler/icons-react";
 import {
@@ -30,16 +28,18 @@ import { useCallback, useEffect, useState } from "react";
 import classes from "./ComplexUsageExample.module.css";
 import {
   useCreateContact,
+  useDeleteContact,
   useGetContacts,
 } from "../../Query/Contacts/contacts";
 import SUPABASE_TABLE, { ContactsType } from "../../utils/SUPABASE_TABLE";
-import { supabase } from "../../utils";
+import { supabase, useDebounce } from "../../utils";
 import { useDisclosure } from "@mantine/hooks";
 
 let PAGE_SIZE = 10;
 
 const Dashboard = () => {
   const [limit, setLimit] = useState(10);
+  const deleteContact = useDeleteContact();
   const [opened, { open, close }] = useDisclosure(false);
   const [contactData, setContactData] = useState<ContactsType>({
     age: 0,
@@ -50,6 +50,20 @@ const Dashboard = () => {
     email: "",
     name: "",
     state: "",
+  });
+  const onChange = <K extends keyof ContactsType>(
+    key: K,
+    value: ContactsType[K]
+  ) => {
+    setContactData((prev) => {
+      return {
+        ...prev,
+        [key]: value,
+      };
+    });
+  };
+  const debouncedOnChange = useDebounce({
+    func: onChange,
   });
   const { showContextMenu, hideContextMenu } = useContextMenu();
   const [page, setPage] = useState(1);
@@ -121,12 +135,17 @@ const Dashboard = () => {
     });
   }, [selectedRecords.length]);
 
-  const sendMessage = useCallback(({ name }: ContactsType) => {
-    console.log({
-      withBorder: true,
-      title: "Sending message",
-      message: `A real application could send a message to ${name}, but this is just a demo and we're not going to do that because we don't have a backend`,
-      color: "green",
+  const deleteRow = useCallback(async ({ name, id }: ContactsType) => {
+    deleteContact.mutate({
+      url: `/contacts`,
+      data: {
+        is_deleted: true,
+      },
+      config: {
+        params: {
+          id: `eq.${id}`,
+        },
+      },
     });
   }, []);
 
@@ -139,14 +158,15 @@ const Dashboard = () => {
         onClick={(e) => {
           e.stopPropagation(); // 👈 prevent triggering the row click function
           openModal({
-            title: `Send message to ${record.name}`,
+            title: `Are you sure to delete the ${record.name}?`,
             classNames: {
               header: classes.modalHeader,
               title: classes.modalTitle,
             },
             children: (
               <>
-                <TextInput mt="md" placeholder="Your message..." />
+                {/* <TextInput mt="md" placeholder="Your message..." /> */}
+                {/* <Text>Are you sure ?</Text> */}
                 <Group mt="md" gap="sm" justify="flex-end">
                   <Button
                     variant="transparent"
@@ -156,13 +176,13 @@ const Dashboard = () => {
                     Cancel
                   </Button>
                   <Button
-                    color="green"
+                    color="red"
                     onClick={() => {
-                      sendMessage(record);
+                      deleteRow(record);
                       closeAllModals();
                     }}
                   >
-                    Send
+                    Delete
                   </Button>
                 </Group>
               </>
@@ -300,7 +320,7 @@ const Dashboard = () => {
   return (
     <div className={classes.tableContainer}>
       <div className="w-full flex justify-end items-end">
-        <Button onClick={open}>Create User</Button>
+        <Button onClick={open}>Create Contact</Button>
       </div>
       <DataTable
         height="calc(100vh - 80px)" // Adjust this height based on the remaining space after other elements
@@ -330,6 +350,7 @@ const Dashboard = () => {
       />
       <Modal opened={opened} onClose={close} title="Authentication">
         {/* Modal content */}
+        <TextInput label="Enter name" placeholder="Name" />
       </Modal>
     </div>
   );

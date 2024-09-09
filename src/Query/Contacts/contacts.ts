@@ -5,12 +5,13 @@ import {
 } from "@tanstack/react-query";
 import SUPABASE_TABLE, { ContactsType } from "../../utils/SUPABASE_TABLE";
 import { QUERY_KEY, supabase } from "../../utils";
-import { GET } from "../../axios";
+import { GET, PATCH } from "../../axios";
 import POST, { PostPropsType } from "../../axios/Post/Post";
 import { useLoadingToast } from "../../utils/loadingToast";
 import { Id, toast } from "react-toastify";
 import { PostgrestError } from "@supabase/supabase-js";
 import { useRef } from "react";
+import { PatchPropsType } from "../../axios/Patch/Patch";
 
 const LIMIT = 10; // Define a limit for pagination
 
@@ -26,6 +27,7 @@ export const useGetContacts = (search: string, limit: number) => {
         config: {
           params: {
             select: "*",
+            is_deleted: "eq.false",
           },
         },
       });
@@ -57,7 +59,7 @@ export const useCreateContact = () => {
       if (id.current) {
         toast.update(id.current, {
           type: "success",
-          render: "Account created Successfully,Check your Email and Verify",
+          render: "Created Successfully",
           isLoading: false,
           progress: 0,
           autoClose: 3000,
@@ -67,6 +69,47 @@ export const useCreateContact = () => {
     onError: (error, variables, context) => {
       console.log({ id });
 
+      if (id.current) {
+        toast.update(id.current, {
+          type: "error",
+          render: error.message,
+          isLoading: false,
+          progress: 0,
+          autoClose: 3000,
+        });
+      }
+    },
+  });
+};
+export const useDeleteContact = () => {
+  const queryClient = useQueryClient();
+  let id = useRef<Id>();
+  return useMutation<
+    null,
+    PostgrestError,
+    PatchPropsType<{ is_deleted: boolean }>,
+    any
+  >({
+    mutationFn: PATCH,
+    onMutate: () => {
+      id.current = useLoadingToast("Deleting");
+      console.log({ id });
+    },
+    onSuccess: (data) => {
+      console.log(data);
+      console.log({ id });
+      queryClient.invalidateQueries({ queryKey: [QUERY_KEY.contacts] });
+      if (id.current) {
+        toast.update(id.current, {
+          type: "success",
+          render: "Deleted Successfully",
+          isLoading: false,
+          progress: 0,
+          autoClose: 3000,
+        });
+      }
+    },
+    onError: (error, variables, context) => {
       if (id.current) {
         toast.update(id.current, {
           type: "error",
