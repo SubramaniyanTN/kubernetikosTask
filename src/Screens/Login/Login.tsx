@@ -1,11 +1,4 @@
-import {
-  Button,
-  Card,
-  Text,
-  TextInput,
-  Anchor,
-  Container,
-} from "@mantine/core";
+import { Button, Card, Text, TextInput, Container } from "@mantine/core";
 import { useEffect, useState } from "react";
 import { useDebounce } from "../../utils";
 import supabase from "../../utils/supabaseConfig";
@@ -36,7 +29,7 @@ const Login = () => {
     func: onChange,
   });
   const handleSignIn = async () => {
-    const id = toast.loading("Loggin In", {
+    const id = toast.loading("Logging In", {
       closeButton: true,
       draggable: true,
       hideProgressBar: false,
@@ -68,12 +61,11 @@ const Login = () => {
   const handleNavigateToSignUp = () => {
     navigate(import.meta.env.BASE_URL + "signup");
   };
+
   return (
     <div className="w-screen h-screen flex items-center justify-center bg-[#EEF2F5]">
-      <Card className="bg-[#FFF] w-[40%] min-h-[50%] flex-col justify-center items-center py-10 gap-7">
-        <Text className="font-[#292929] font-bold text-2xl" variant="heading">
-          Login
-        </Text>
+      <Card className="bg-[#FFF] w-full sm:w-[80%] md:w-[60%] lg:w-[40%] min-h-[50%] flex-col justify-center items-center py-10 px-4 sm:px-8 gap-7">
+        <Text className="text-[#292929] font-bold text-2xl mb-4">Login</Text>
         <TextInput
           onChange={(event: React.ChangeEvent<HTMLInputElement>) =>
             debouncedOnChange("email", event.target.value)
@@ -81,6 +73,7 @@ const Login = () => {
           label="Enter your Email"
           size="md"
           placeholder="Email"
+          className="w-full"
         />
         <TextInput
           onChange={(event: React.ChangeEvent<HTMLInputElement>) =>
@@ -89,21 +82,23 @@ const Login = () => {
           label="Enter your Password"
           size="md"
           placeholder="Password"
+          className="w-full"
         />
-        <Button onClick={handleSignIn} size="md" variant="filled">
+        <Button
+          onClick={handleSignIn}
+          size="md"
+          variant="filled"
+          className="w-full"
+        >
           Login
         </Button>
         <Container className="flex flex-row justify-center items-center gap-4">
-          <Text
-            className="font-[#292929] font-normal text-sm"
-            variant="heading"
-          >
-            Don't have an account ?
+          <Text className="text-[#292929] font-normal text-sm">
+            Don't have an account?
           </Text>
           <Text
             onClick={handleNavigateToSignUp}
-            variant="text"
-            className="underline cursor-grab"
+            className="underline cursor-pointer text-blue-600"
           >
             Sign up
           </Text>

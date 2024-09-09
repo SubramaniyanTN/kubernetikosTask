@@ -3,8 +3,9 @@ import { useState } from "react";
 import { useDebounce } from "../../utils";
 import supabase from "../../utils/supabaseConfig";
 import { toast } from "react-toastify";
-import { useNavigate, useNavigation } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import useCreateUser from "../../Query/User/createUser";
+
 export type SignUpDetailsType = {
   email: string;
   password: string;
@@ -21,28 +22,30 @@ const SignUp = () => {
     userName: "",
   });
   const roles = ["Admin", "Management"] as const;
+
   const onChange = <K extends keyof SignUpDetailsType>(
     key: K,
     value: SignUpDetailsType[K]
   ) => {
-    setSignInDetails((prev) => {
-      return {
-        ...prev,
-        [key]: value,
-      };
-    });
+    setSignInDetails((prev) => ({
+      ...prev,
+      [key]: value,
+    }));
   };
+
   const createUser = useCreateUser();
   const debouncedOnChange = useDebounce({
     func: onChange,
   });
+
   const handleSignUp = async () => {
-    const id = toast.loading("Sign Up", {
+    const id = toast.loading("Signing Up", {
       closeButton: true,
       draggable: true,
       hideProgressBar: false,
       progress: 1,
     });
+
     const response = await supabase.auth.signUp({
       email: signInDetails.email,
       password: signInDetails.password,
@@ -53,12 +56,12 @@ const SignUp = () => {
         },
       },
     });
-    console.log({ response });
+
     if (response.data.user) {
       navigate("/");
       toast.update(id, {
         type: "success",
-        render: "Account created Successfully,Check your Email and Verify",
+        render: "Account created successfully. Check your email and verify.",
         isLoading: false,
         progress: 0,
         autoClose: 3000,
@@ -73,10 +76,14 @@ const SignUp = () => {
       });
     }
   };
+
   return (
     <div className="w-screen h-screen flex items-center justify-center bg-[#EEF2F5]">
-      <Card className="bg-[#FFF] w-[40%] min-h-[50%] flex-col justify-center items-center py-10 gap-7">
-        <Text className="font-[#292929] font-bold text-2xl" variant="heading">
+      <Card className="bg-[#FFF] w-full sm:w-[80%] md:w-[60%] lg:w-[40%] min-h-[50%] flex-col justify-center items-center py-10 px-4 sm:px-8 gap-7">
+        <Text
+          className="text-[#292929] font-bold text-2xl mb-4"
+          variant="heading"
+        >
           Sign Up
         </Text>
         <TextInput
@@ -86,6 +93,7 @@ const SignUp = () => {
           label="Enter your Email"
           size="md"
           placeholder="Email"
+          className="w-full"
         />
         <TextInput
           onChange={(event: React.ChangeEvent<HTMLInputElement>) =>
@@ -94,6 +102,7 @@ const SignUp = () => {
           label="Enter your Password"
           size="md"
           placeholder="Password"
+          className="w-full"
         />
         <TextInput
           onChange={(event: React.ChangeEvent<HTMLInputElement>) =>
@@ -102,15 +111,16 @@ const SignUp = () => {
           label="Enter your User Name"
           size="md"
           placeholder="User Name"
+          className="w-full"
         />
         <Radio.Group
           name="role"
           label="Select your Role"
-          description="Based on this role , You will be able to manage Projects"
+          description="Based on this role, you will be able to manage projects"
           withAsterisk
         >
           <Group mt="xs">
-            {roles.map((singleValue, index) => (
+            {roles.map((role, index) => (
               <Radio
                 key={index}
                 onChange={(event: React.ChangeEvent<HTMLInputElement>) =>
@@ -119,13 +129,18 @@ const SignUp = () => {
                     event.target.value as SignUpDetailsType["role"]
                   )
                 }
-                value={singleValue}
-                label={singleValue}
+                value={role}
+                label={role}
               />
             ))}
           </Group>
         </Radio.Group>
-        <Button onClick={handleSignUp} size="md" variant="filled">
+        <Button
+          onClick={handleSignUp}
+          size="md"
+          variant="filled"
+          className="w-full"
+        >
           Sign Up
         </Button>
       </Card>
