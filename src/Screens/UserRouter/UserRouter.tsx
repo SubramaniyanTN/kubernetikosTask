@@ -33,8 +33,16 @@ function NavbarLink({ icon: Icon, label, active, onClick }: NavbarLinkProps) {
 }
 
 const linkData = [
-  { icon: IconGauge, label: "Dashboard", path: "/user/" },
-  { icon: IconSettings, label: "Settings", path: "/user/settings" },
+  {
+    icon: IconGauge,
+    label: "Dashboard",
+    path: import.meta.env.BASE_URL + "/user/",
+  },
+  {
+    icon: IconSettings,
+    label: "Settings",
+    path: import.meta.env.BASE_URL + "/user/settings",
+  },
 ];
 
 const UserRouter = () => {
