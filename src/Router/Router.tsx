@@ -19,7 +19,7 @@ const router = createBrowserRouter([
         element: <Login />,
       },
       {
-        path: import.meta.env.BASE_URL + "signup",
+        path: "signup",
         element: <SignUp />,
       },
     ],
