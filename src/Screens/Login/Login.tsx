@@ -97,11 +97,7 @@ const Login = () => {
           >
             Don't have an account ?
           </Text>
-          <Anchor
-            href={import.meta.env.BASE_URL + "signup"}
-            variant="text"
-            underline="always"
-          >
+          <Anchor href={"signup"} variant="text" underline="always">
             Sign up
           </Anchor>
         </Container>
