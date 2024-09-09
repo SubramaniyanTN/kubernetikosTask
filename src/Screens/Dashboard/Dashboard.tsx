@@ -5,6 +5,7 @@ import {
   Flex,
   Group,
   MantineTheme,
+  Modal,
   Text,
   TextInput,
   rem,
@@ -14,8 +15,9 @@ import {
   IconClick,
   IconEdit,
   IconMessage,
-  IconTrash,
   IconTrashX,
+  IconHttpDelete,
+  IconTrash,
 } from "@tabler/icons-react";
 import {
   DataTable,
@@ -26,14 +28,29 @@ import {
 import { useContextMenu } from "mantine-contextmenu";
 import { useCallback, useEffect, useState } from "react";
 import classes from "./ComplexUsageExample.module.css";
-import { useGetContacts } from "../../Query/Contacts/contacts";
+import {
+  useCreateContact,
+  useGetContacts,
+} from "../../Query/Contacts/contacts";
 import SUPABASE_TABLE, { ContactsType } from "../../utils/SUPABASE_TABLE";
 import { supabase } from "../../utils";
+import { useDisclosure } from "@mantine/hooks";
 
 let PAGE_SIZE = 10;
 
 const Dashboard = () => {
   const [limit, setLimit] = useState(10);
+  const [opened, { open, close }] = useDisclosure(false);
+  const [contactData, setContactData] = useState<ContactsType>({
+    age: 0,
+    city: "",
+    company: "",
+    department: "",
+    description: "",
+    email: "",
+    name: "",
+    state: "",
+  });
   const { showContextMenu, hideContextMenu } = useContextMenu();
   const [page, setPage] = useState(1);
   const [sortStatus, setSortStatus] = useState<
@@ -55,13 +72,27 @@ const Dashboard = () => {
     setPage(1);
     setSortStatus(status);
   };
+  const createContact = useCreateContact();
 
   const initialData = async () => {
     const response = await supabase.from(SUPABASE_TABLE.contacts).select("*");
     console.log({ response });
   };
+  const creatingData = async () => {
+    const response = await supabase.auth.getUser();
+    if (response.data) {
+      createContact.mutate({
+        url: `/contacts`,
+        data: {
+          ...contactData,
+          created_by: response.data.user?.id,
+        },
+      });
+    }
+  };
   useEffect(() => {
     initialData();
+    // creatingData();
   }, []);
 
   const editRecord = useCallback(({ name }: ContactsType) => {
@@ -139,7 +170,7 @@ const Dashboard = () => {
           });
         }}
       >
-        <IconMessage size={16} />
+        <IconTrash size={16} />
       </ActionIcon>
       <ActionIcon
         size="sm"
@@ -268,6 +299,9 @@ const Dashboard = () => {
 
   return (
     <div className={classes.tableContainer}>
+      <div className="w-full flex justify-end items-end">
+        <Button onClick={open}>Create User</Button>
+      </div>
       <DataTable
         height="calc(100vh - 80px)" // Adjust this height based on the remaining space after other elements
         minHeight={400}
@@ -294,6 +328,9 @@ const Dashboard = () => {
         onRowContextMenu={handleContextMenu}
         onScroll={hideContextMenu}
       />
+      <Modal opened={opened} onClose={close} title="Authentication">
+        {/* Modal content */}
+      </Modal>
     </div>
   );
 };
