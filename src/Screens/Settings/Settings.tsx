@@ -8,14 +8,12 @@ import {
   TextInput,
 } from "@mantine/core";
 import { useEffect, useState } from "react";
-import { supabase, SUPABASE_TABLE, useDebounce } from "../../utils";
+import { supabase, SUPABASE_TABLE } from "../../utils";
 import { IconRefresh, IconEdit } from "@tabler/icons-react";
-import useUserData from "../../Store/Store";
-import { ProfilesType } from "../../utils/SUPABASE_TABLE";
 import { toast } from "react-toastify";
 
 const Settings = () => {
-  const [userData, setUserData] = useState<ProfilesType>({
+  const [userData, setUserData] = useState({
     email: "",
     id: "",
     role: "",
@@ -24,20 +22,21 @@ const Settings = () => {
   });
   const [isEdit, setIsEdit] = useState<boolean>(false);
   const roles = ["Admin", "Management"] as const;
-  const onChange = <K extends keyof ProfilesType>(
+
+  const onChange = <K extends keyof typeof userData>(
     key: K,
-    value: ProfilesType[K]
+    value: (typeof userData)[K]
   ) => {
-    setUserData((prev) => {
-      return {
-        ...prev,
-        [key]: value,
-      };
-    });
+    setUserData((prev) => ({
+      ...prev,
+      [key]: value,
+    }));
   };
+
   const toggleEdit = () => {
     setIsEdit((prev) => !prev);
   };
+
   const setInitialData = async () => {
     const { data } = await supabase.auth.getUser();
     if (data.user?.id) {
@@ -51,6 +50,7 @@ const Settings = () => {
       }
     }
   };
+
   const handleSave = async () => {
     const id = toast.loading("Updating", {
       closeButton: true,
@@ -62,7 +62,7 @@ const Settings = () => {
       .from(SUPABASE_TABLE.profiles)
       .update({ user_name: userData.user_name, role: userData.role })
       .eq("id", userData.id);
-    console.log({ error, data });
+
     if (!error) {
       toast.update(id, {
         type: "success",
@@ -72,7 +72,6 @@ const Settings = () => {
         autoClose: 3000,
       });
     } else {
-      console.log(error);
       toast.update(id, {
         type: "error",
         render: error?.message,
@@ -82,13 +81,18 @@ const Settings = () => {
       });
     }
   };
+
   useEffect(() => {
     setInitialData();
   }, []);
+
   return (
-    <div className="fixed w-full h-full flex items-center justify-center">
-      <Card className="bg-[#FFF] w-[40%] min-h-[50%] flex-col justify-center items-center py-10 gap-7">
-        <Text className="font-[#292929] font-bold text-2xl" variant="heading">
+    <div className="fixed w-full h-full flex items-center justify-center bg-[#EEF2F5]">
+      <Card className="bg-[#FFF] w-full sm:w-[80%] md:w-[60%] lg:w-[40%] min-h-[50%] flex-col justify-center items-center py-10 px-4 sm:px-8 gap-7">
+        <Text
+          className="text-[#292929] font-bold text-2xl mb-4"
+          variant="heading"
+        >
           Profile Info
         </Text>
         <TextInput
@@ -100,73 +104,73 @@ const Settings = () => {
           placeholder="Name"
           value={userData?.user_name}
           disabled={!isEdit}
+          className="w-full"
         />
 
         <TextInput
           label="Email"
           size="md"
-          placeholder="Password"
+          placeholder="Email"
           disabled
           value={userData?.email}
+          className="w-full"
         />
         <Radio.Group
           name="role"
           label="Select your Role"
-          description="Based on this role , You will be able to manage Projects"
+          description="Based on this role, you will be able to manage Projects"
           withAsterisk
           value={userData?.role}
+          className="w-full"
         >
-          <Group mt="xs">
-            {roles.map((singleValue, index) => {
-              return (
-                <Radio
-                  key={index}
-                  onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
-                    setUserData((prev) => {
-                      return {
-                        ...prev,
-                        role: event.target.value,
-                      };
-                    });
-                  }}
-                  value={singleValue}
-                  label={singleValue}
-                  disabled={!isEdit}
-                />
-              );
-            })}
+          <Group mt="xs" className="flex flex-row w-full">
+            {roles.map((singleValue, index) => (
+              <Radio
+                key={index}
+                onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
+                  setUserData((prev) => ({
+                    ...prev,
+                    role: event.target.value,
+                  }));
+                }}
+                value={singleValue}
+                label={singleValue}
+                disabled={!isEdit}
+                className="w-full"
+              />
+            ))}
           </Group>
         </Radio.Group>
-        <Container className="flex flex-row justify-between items-center gap-4">
+        <Container className="flex flex-row justify-between items-center gap-4 w-full">
           <Button
             variant="filled"
             onClick={() => {
               setInitialData();
               toggleEdit();
             }}
+            className="w-full sm:w-auto"
           >
             Cancel
           </Button>
-          <Button variant="light" onClick={handleSave}>
+          <Button
+            variant="light"
+            onClick={handleSave}
+            className="w-full sm:w-auto"
+          >
             Save
           </Button>
         </Container>
-        <Container
-          pos={"absolute"}
-          className="flex flex-row gap-5"
-          right={20}
-          top={20}
-        >
+        <Container className="flex flex-row gap-5 absolute right-5 top-5">
           <div
             onClick={setInitialData}
-            className={`border-gray-400 bg-gray-100 p-2`}
+            className={`border-gray-400 bg-gray-100 p-2 cursor-pointer`}
           >
             <IconRefresh />
           </div>
           <div
             className={`border-gray-400 ${
               isEdit ? "bg-green-300" : "bg-gray-100"
-            } p-2`}
+            } p-2 cursor-pointer`}
             onClick={toggleEdit}
           >
             <IconEdit color={isEdit ? "#FFF" : "#000"} />
