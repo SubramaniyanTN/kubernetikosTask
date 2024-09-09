@@ -65,6 +65,9 @@ const Login = () => {
       });
     }
   };
+  const handleNavigateToSignUp = () => {
+    navigate(import.meta.env.BASE_URL + "signup");
+  };
   return (
     <div className="w-screen h-screen flex items-center justify-center bg-[#EEF2F5]">
       <Card className="bg-[#FFF] w-[40%] min-h-[50%] flex-col justify-center items-center py-10 gap-7">
@@ -97,9 +100,13 @@ const Login = () => {
           >
             Don't have an account ?
           </Text>
-          <Anchor href={"signup"} variant="text" underline="always">
+          <Text
+            onClick={handleNavigateToSignUp}
+            variant="text"
+            className="underline cursor-grab"
+          >
             Sign up
-          </Anchor>
+          </Text>
         </Container>
       </Card>
     </div>
