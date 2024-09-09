@@ -30,8 +30,9 @@ import {
   useCreateContact,
   useDeleteContact,
   useGetContacts,
+  useUpdateContact,
 } from "../../Query/Contacts/contacts";
-import SUPABASE_TABLE, { ContactsType } from "../../utils/SUPABASE_TABLE";
+import { ContactsType } from "../../utils/SUPABASE_TABLE";
 import { supabase, useDebounce } from "../../utils";
 import { useDisclosure } from "@mantine/hooks";
 
@@ -40,7 +41,9 @@ let PAGE_SIZE = 10;
 const Dashboard = () => {
   const [limit, setLimit] = useState(10);
   const deleteContact = useDeleteContact();
+  const updateContact = useUpdateContact();
   const [opened, { open, close }] = useDisclosure(false);
+  const [isEdit, setIsEdit] = useState(false);
   const [contactData, setContactData] = useState<ContactsType>({
     age: 0,
     city: "",
@@ -75,7 +78,6 @@ const Dashboard = () => {
   });
 
   const contacts = useGetContacts("", limit);
-  console.log(contacts.error);
   const tableData = contacts.data?.pages.map((singlePage) => singlePage).flat();
 
   const [selectedRecords, setSelectedRecords] = useState<ContactsType[]>([]);
@@ -87,11 +89,24 @@ const Dashboard = () => {
     setSortStatus(status);
   };
   const createContact = useCreateContact();
+  useEffect(() => {
+    if (!opened) {
+      setContactData({
+        age: 0,
+        city: "",
+        company: "",
+        department: "",
+        description: "",
+        email: "",
+        name: "",
+        state: "",
+      });
+      if (isEdit) {
+        setIsEdit(false);
+      }
+    }
+  }, [opened]);
 
-  const initialData = async () => {
-    const response = await supabase.from(SUPABASE_TABLE.contacts).select("*");
-    console.log({ response });
-  };
   const creatingData = async () => {
     const response = await supabase.auth.getUser();
     if (response.data) {
@@ -103,19 +118,62 @@ const Dashboard = () => {
         },
       });
     }
+    close();
   };
-  useEffect(() => {
-    initialData();
-    // creatingData();
-  }, []);
+  const updatingData = async () => {
+    console.log("updating data triggerd");
+    const response = await supabase.auth.getUser();
+    if (response.data) {
+      updateContact.mutate({
+        url: `/contacts`,
+        data: {
+          age: contactData.age,
+          city: contactData.city,
+          company: contactData.company,
+          department: contactData.department,
+          description: contactData.description,
+          email: contactData.email,
+          name: contactData.name,
+          state: contactData.state,
+        },
+        config: {
+          params: {
+            id: `eq.${contactData.id}`,
+          },
+        },
+      });
+    }
+    close();
+  };
 
-  const editRecord = useCallback(({ name }: ContactsType) => {
-    console.log({
-      withBorder: true,
-      title: "Editing record",
-      message: `In a real application we could show a popup to edit ${name}, but this is just a demo, so we're not going to do that`,
-    });
-  }, []);
+  const editRecord = useCallback(
+    ({
+      name,
+      age,
+      city,
+      company,
+      department,
+      description,
+      email,
+      state,
+      id,
+    }: ContactsType) => {
+      setContactData({
+        age,
+        city,
+        company,
+        department,
+        description,
+        email,
+        name,
+        state,
+        id,
+      });
+      setIsEdit(true);
+      open();
+    },
+    []
+  );
 
   const deleteRecord = useCallback(({ name }: ContactsType) => {
     console.log({
@@ -165,8 +223,6 @@ const Dashboard = () => {
             },
             children: (
               <>
-                {/* <TextInput mt="md" placeholder="Your message..." /> */}
-                {/* <Text>Are you sure ?</Text> */}
                 <Group mt="md" gap="sm" justify="flex-end">
                   <Button
                     variant="transparent"
@@ -350,7 +406,79 @@ const Dashboard = () => {
       />
       <Modal opened={opened} onClose={close} title="Authentication">
         {/* Modal content */}
-        <TextInput label="Enter name" placeholder="Name" />
+        <TextInput
+          label="Enter name"
+          placeholder="Name"
+          defaultValue={contactData.name}
+          onChange={(event) =>
+            debouncedOnChange("name", event.currentTarget.value)
+          }
+        />
+        <TextInput
+          label="Enter Age"
+          placeholder="Age"
+          defaultValue={contactData.age}
+          onChange={(event) =>
+            debouncedOnChange("age", Number(event.currentTarget.value))
+          }
+          type="number"
+        />
+        <TextInput
+          label="Enter City"
+          placeholder="City"
+          defaultValue={contactData.city}
+          onChange={(event) =>
+            debouncedOnChange("city", event.currentTarget.value)
+          }
+        />
+        <TextInput
+          label="Enter Company"
+          placeholder="Company"
+          defaultValue={contactData.company.toString()}
+          onChange={(event) =>
+            debouncedOnChange("company", event.currentTarget.value)
+          }
+        />
+        <TextInput
+          label="Enter Department"
+          placeholder="department"
+          defaultValue={contactData.department}
+          onChange={(event) =>
+            debouncedOnChange("department", event.currentTarget.value)
+          }
+        />
+        <TextInput
+          label="Enter Description"
+          placeholder="Description"
+          defaultValue={contactData.description}
+          onChange={(event) =>
+            debouncedOnChange("description", event.currentTarget.value)
+          }
+        />
+        <TextInput
+          label="Enter Email"
+          placeholder="Email"
+          defaultValue={contactData.email}
+          onChange={(event) =>
+            debouncedOnChange("email", event.currentTarget.value)
+          }
+        />
+        <TextInput
+          label="Enter State"
+          placeholder="State"
+          defaultValue={contactData.state}
+          onChange={(event) =>
+            debouncedOnChange("state", event.currentTarget.value)
+          }
+        />
+        <div className="my-3 flex flex-row justify-end">
+          <Button
+            variant="filled"
+            onClick={isEdit ? updatingData : creatingData}
+          >
+            {isEdit ? "Update User" : "Create User"}
+          </Button>
+        </div>
       </Modal>
     </div>
   );

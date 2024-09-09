@@ -81,6 +81,39 @@ export const useCreateContact = () => {
     },
   });
 };
+export const useUpdateContact = () => {
+  const queryClient = useQueryClient();
+  let id = useRef<Id>();
+  return useMutation<null, PostgrestError, PatchPropsType<ContactsType>, any>({
+    mutationFn: PATCH,
+    onMutate: () => {
+      id.current = useLoadingToast("Updating");
+    },
+    onSuccess: (data) => {
+      queryClient.invalidateQueries({ queryKey: [QUERY_KEY.contacts] });
+      if (id.current) {
+        toast.update(id.current, {
+          type: "success",
+          render: "Updated Successfully",
+          isLoading: false,
+          progress: 0,
+          autoClose: 3000,
+        });
+      }
+    },
+    onError: (error, variables, context) => {
+      if (id.current) {
+        toast.update(id.current, {
+          type: "error",
+          render: error.message,
+          isLoading: false,
+          progress: 0,
+          autoClose: 3000,
+        });
+      }
+    },
+  });
+};
 export const useDeleteContact = () => {
   const queryClient = useQueryClient();
   let id = useRef<Id>();
