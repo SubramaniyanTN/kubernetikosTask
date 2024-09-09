@@ -12,6 +12,7 @@ import { createTheme, MantineProvider } from "@mantine/core";
 import { ToastContainer } from "react-toastify";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { ModalsProvider } from "@mantine/modals";
+import { ContextMenuProvider } from "mantine-contextmenu";
 const queryClient = new QueryClient();
 
 function App() {
@@ -20,20 +21,22 @@ function App() {
     <QueryClientProvider client={queryClient}>
       <MantineProvider theme={theme}>
         <ModalsProvider>
-          <RouterProvider router={router} />
-          <ToastContainer
-            position="top-right"
-            autoClose={5000}
-            hideProgressBar={false}
-            newestOnTop={false}
-            closeOnClick
-            rtl={false}
-            pauseOnFocusLoss
-            draggable
-            pauseOnHover
-            theme="light"
-            closeButton={true}
-          />
+          <ContextMenuProvider>
+            <RouterProvider router={router} />
+            <ToastContainer
+              position="top-right"
+              autoClose={5000}
+              hideProgressBar={false}
+              newestOnTop={false}
+              closeOnClick
+              rtl={false}
+              pauseOnFocusLoss
+              draggable
+              pauseOnHover
+              theme="light"
+              closeButton={true}
+            />
+          </ContextMenuProvider>
         </ModalsProvider>
       </MantineProvider>
     </QueryClientProvider>

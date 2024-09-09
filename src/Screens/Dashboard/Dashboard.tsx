@@ -121,7 +121,6 @@ const Dashboard = () => {
     close();
   };
   const updatingData = async () => {
-    console.log("updating data triggerd");
     const response = await supabase.auth.getUser();
     if (response.data) {
       updateContact.mutate({
