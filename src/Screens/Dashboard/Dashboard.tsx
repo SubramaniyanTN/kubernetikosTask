@@ -108,7 +108,6 @@ const Dashboard = () => {
       }
     }
     return () => {
-      console.log("Component unmounted");
       queryClient.cancelQueries({
         queryKey: [QUERY_KEY.contacts],
       });
