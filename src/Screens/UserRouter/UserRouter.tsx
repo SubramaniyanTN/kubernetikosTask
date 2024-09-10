@@ -60,6 +60,17 @@ const UserRouter = () => {
   const handleNavigation = (path: string) => {
     navigate(path);
   };
+
+  const checkVerifiedUser = async () => {
+    const response = await supabase.auth.getUser();
+    if (!response.data.user) {
+      navigate("/", { replace: true });
+    }
+  };
+
+  useEffect(() => {
+    checkVerifiedUser();
+  }, [location.pathname]);
   const handleLogOut = async () => {
     const id = toast.loading("Logging out");
     await supabase.auth.signOut();
@@ -70,7 +81,7 @@ const UserRouter = () => {
       progress: 0,
       autoClose: 3000,
     });
-    navigate("/");
+    navigate("/", { replace: true });
   };
 
   const links = linkData.map((link, index) => (
