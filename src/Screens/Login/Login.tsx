@@ -47,7 +47,7 @@ const Login = () => {
         progress: 0,
         autoClose: 3000,
       });
-      navigate(import.meta.env.BASE_URL + "user");
+      navigate("/user");
     } else {
       toast.update(id, {
         type: "error",
@@ -59,7 +59,7 @@ const Login = () => {
     }
   };
   const handleNavigateToSignUp = () => {
-    navigate(import.meta.env.BASE_URL + "signup");
+    navigate("/signup");
   };
 
   return (

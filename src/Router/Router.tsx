@@ -1,4 +1,4 @@
-import { createBrowserRouter } from "react-router-dom";
+import { createBrowserRouter, createHashRouter } from "react-router-dom";
 import {
   Login,
   SignUp,
@@ -8,24 +8,23 @@ import {
   Settings,
 } from "../Screens";
 
-const router = createBrowserRouter([
+const router = createHashRouter([
   {
-    path: import.meta.env.BASE_URL, // Base URL is only needed at the root level
+    path: "/",
     element: <AuthScreen />,
-    // errorElement: <ErrorPage />, // Handle errors for auth routes
     children: [
       {
         index: true,
         element: <Login />,
       },
       {
-        path: "signup", // Relative to base path
+        path: "signup",
         element: <SignUp />,
       },
     ],
   },
   {
-    path: import.meta.env.BASE_URL + "user", // Base URL for user routes
+    path: "/user",
     element: <UserRouter />,
     children: [
       {
@@ -33,7 +32,7 @@ const router = createBrowserRouter([
         element: <Dashboard />,
       },
       {
-        path: "settings", // Child routes do not need base URL
+        path: "settings",
         element: <Settings />,
       },
     ],

@@ -11,8 +11,7 @@ const AuthScreen = () => {
     const response = await supabase.auth.getUser();
     await supabase.auth.refreshSession();
     if (response.data.user) {
-      console.log(import.meta.env.BASE_URL + "user");
-      navigate(import.meta.env.BASE_URL + "user");
+      navigate("/user");
     }
   };
   useEffect(() => {

@@ -36,12 +36,12 @@ const linkData = [
   {
     icon: IconGauge,
     label: "Dashboard",
-    path: import.meta.env.BASE_URL + "user/",
+    path: "/user/",
   },
   {
     icon: IconSettings,
     label: "Settings",
-    path: import.meta.env.BASE_URL + "user/settings",
+    path: "/user/settings",
   },
 ];
 
@@ -70,7 +70,7 @@ const UserRouter = () => {
       progress: 0,
       autoClose: 3000,
     });
-    navigate(import.meta.env.BASE_URL);
+    navigate("/");
   };
 
   const links = linkData.map((link, index) => (
