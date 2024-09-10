@@ -33,12 +33,14 @@ import {
   useUpdateContact,
 } from "../../Query/Contacts/contacts";
 import { ContactsType } from "../../utils/SUPABASE_TABLE";
-import { supabase, useDebounce } from "../../utils";
+import { QUERY_KEY, supabase, useDebounce } from "../../utils";
 import { useDisclosure } from "@mantine/hooks";
+import { useQueryClient } from "@tanstack/react-query";
 
 let PAGE_SIZE = 10;
 
 const Dashboard = () => {
+  const queryClient = useQueryClient();
   const [limit, setLimit] = useState(10);
   const deleteContact = useDeleteContact();
   const updateContact = useUpdateContact();
@@ -105,6 +107,12 @@ const Dashboard = () => {
         setIsEdit(false);
       }
     }
+    return () => {
+      console.log("Component unmounted");
+      queryClient.cancelQueries({
+        queryKey: [QUERY_KEY.contacts],
+      });
+    };
   }, [opened]);
 
   const creatingData = async () => {

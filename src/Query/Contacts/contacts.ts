@@ -21,7 +21,7 @@ export const useGetContacts = (search: string, limit: number) => {
     { statusCode: number; success: boolean; message: string }
   >({
     queryKey: [QUERY_KEY.contacts],
-    queryFn: async ({ pageParam = 0 }) => {
+    queryFn: async ({ pageParam = 0, signal }) => {
       return GET({
         url: `/contacts`,
         config: {
@@ -29,6 +29,7 @@ export const useGetContacts = (search: string, limit: number) => {
             select: "*",
             is_deleted: "eq.false",
           },
+          signal,
         },
       });
     },
